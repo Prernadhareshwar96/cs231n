@@ -7,7 +7,7 @@ References:
 3. https://github.com/cvondrick/videogan
 4. https://github.com/eriklindernoren/PyTorch-GAN
 
-# FAst neural style transfers :
+# Fast neural style transfers :
 1. https://github.com/pytorch/examples/tree/master/fast_neural_style
 
 # Dataset :
