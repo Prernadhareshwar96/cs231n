@@ -1,20 +1,13 @@
 import torch
 import numpy as np
 import torch.nn as nn
+import torch.optim as optim
 
 class View_fun(nn.Module):
        def __init__(self):
             super(View, self).__init__()
         def forward(self, x):
             return x.view(-1) 
-
-# class Video_Gen(nn.Module):
-#     def __init__(self, H_in = 64, W_in = 64):
-#         """
-#         Defining the basic generator for the GAN
-#         """
-#         super(Video_Gen, self).__init__()
-#         self.conv1 = nn.Conv2d(3, 64, 3, stride = 1, padding = 1)
 
 Generator = nn.Sequential(
     nn.Conv2d(3, 1024, 3, stride = 1, padding = 1)),
@@ -58,5 +51,56 @@ Discriminator = nn.Sequential(
     nn.Batchnorm3d(512),
     nn.LeakyReLU(0.2, True),
     View_fun()
-    nn.Linear(32*64*64*3, 2)
+    nn.Linear(32*64*64*3, 1)
+    nn.LogSigmoid()
 )
+
+cuda = torch.cuda.is_available()
+device = torch.device('cuda:0' if cuda else 'cpu')
+
+
+###############################################################################
+################### Loading training and Validation data ###################### 
+############################################################################### 
+
+X = {}
+loc = "Users/prerna/Documents/Q3/CS231n/data/cartwheel"
+f_list = []
+for filename in os.listdir(loc):
+    f_list.append(loc + filename)
+    
+###############################################################################
+################# Training the model for num_epochs epochs ####################
+###############################################################################
+g_train = 5
+lr_val = 0.00005
+generator = Generator()
+discriminator = Discriminator()
+optim_G = torch.optim.RMSprop(generator.parameters(), lr = lr_val)
+optim_D = torch.optim.RMSprop(discriminator.parameters(), lr = lr_val)
+
+for n in num_epochs:
+    for f in f_list:
+        X_full = np.loadtxt(f)
+        X_full = torch.tensor(X).to(device)
+        fac_max = X_full.shape[0]/32
+        if fac_max == 0:
+            continue
+        for idx in range(fac_max):
+            
+            X = X_full[idx*32:(idx+1)*32]
+            Y_gen = generator(X)
+            Y_dis = discriminator(Y_gen)
+            
+            optim_D.zero_grad()
+            loss_D = -torch.mean(discriminator(X)) + torch.mean(Y_dis)        
+            loss_D.backward()
+            optim_D.step()
+            
+            optim_G.zero_grad()
+            loss_G = -torch.mean(Y_dis)
+            loss_G.backward()
+            optim_G.step()
+            
+
+ 
