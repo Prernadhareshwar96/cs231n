@@ -7,7 +7,12 @@ class View_fun(nn.Module):
         def __init__(self):
             super(View_fun, self).__init__()
         def forward(self, x):
-            return x.view(-1) 
+            return x.view(-1)
+ 
+use_tensorboard = True
+if use_tensorboard == True:
+    from tensorboardX import SummaryWriter
+    board = SummaryWriter()
 
 Generator = nn.Sequential(
     nn.Conv2d(3, 1024, 3, stride = 1, padding = 1),
@@ -38,7 +43,11 @@ Generator = nn.Sequential(
 )
 
 Discriminator = nn.Sequential(
-    nn.Conv3d(3, 64, 3, stride = 1, padding = 1),
+    nn.Conv3d(3, 32, 3, stride = 1, padding = 1),
+    nn.MaxPool3d(3),
+    nn.BatchNorm3d(32),
+    nn.LeakyReLU(0.2, True),
+    nn.Conv3d(32, 64, 3, stride = 1, padding = 1),
     nn.MaxPool3d(3),
     nn.BatchNorm3d(64),
     nn.LeakyReLU(0.2, True),
@@ -46,14 +55,10 @@ Discriminator = nn.Sequential(
     nn.MaxPool3d(3),
     nn.BatchNorm3d(128),
     nn.LeakyReLU(0.2, True),
-    nn.Conv3d(128, 256, 3, stride = 1, padding = 1),
-    nn.MaxPool3d(3),
-    nn.BatchNorm3d(256),
-    nn.LeakyReLU(0.2, True),
     nn.MaxPool3d(2),
     View_fun(),
-    nn.Linear(256, 1),
-    nn.LogSigmoid(),
+    nn.Linear(128, 1),
+    nn.Sigmoid(),
 )
 
 cuda = torch.cuda.is_available()
@@ -67,10 +72,9 @@ loc = "Users/prerna/Documents/Q3/CS231n/data/cartwheel"
 f_list = []
 for filename in os.listdir(loc):
     f_list.append(loc + '/' + filename)
-    
 
 lr_val = 0.00005
-num_epochs = 1
+num_epochs = 500
 optim_G = torch.optim.RMSprop(Generator.parameters(), lr = lr_val)
 optim_D = torch.optim.RMSprop(Discriminator.parameters(), lr = lr_val)
 
@@ -78,6 +82,7 @@ loss_gen = []
 loss_dis = []
 
 ctr = 0
+t = 0
 for n in range(num_epochs):
     for f in f_list:
         ctr += 1
@@ -90,22 +95,38 @@ for n in range(num_epochs):
         if fac_max == 0:
             continue
         for idx in range(int(fac_max)):
-            
+            t += 1
             X = X_full[idx*32:(idx+1)*32]
+            X_real = X.view(1, X.shape[0], X.shape[1], X.shape[2], X.shape[3])
+            X_real = X_real.permute(0, 2, 3, 4, 1)
             Y_gen = Generator(X)
             Y_gen = Y_gen.view(1, Y_gen.shape[0], Y_gen.shape[1], Y_gen.shape[2], Y_gen.shape[3])
             Y_gen = Y_gen.permute(0, 2, 3, 4, 1)
             Y_dis = Discriminator(Y_gen)
             
             optim_D.zero_grad()
-            loss_D = -torch.mean(Discriminator(X)) + torch.mean(Y_dis)        
-            loss_D.backward()
+            loss_D = -torch.mean(torch.log(Discriminator(X_real))) - torch.mean(torch.log(1 - Y_dis))         
+            loss_D.backward(retain_graph = True)
             optim_D.step()
             
             optim_G.zero_grad()
-            loss_G = -torch.mean(Y_dis)
+            loss_G = -torch.mean(torch.log(Y_dis))
             loss_G.backward()
             optim_G.step()
             
             loss_gen.append(loss_G)
             loss_dis.append(loss_D)
+            
+            if use_tensorboard:
+                board.add_scalar('Generator Loss', loss_G, t)
+                board.add_scalar('Discriminator loss', loss_D, t)
+
+board.close() if use_tensorboard else None  # Closes tensorboard, else do nothing
+path_parameter_G = "output/" + "latest_G_" +str(lr_val)+ '_'+ str(num_epochs) + ".pt"
+path_parameter_D = "output/" + "latest_D_" +str(lr_val)+ '_'+ str(num_epochs) + ".pt"
+path_loss_G = "output/" + "Loss_G_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
+path_loss_D = "output/" + "Loss_D_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
+np.savetxt(path_loss_G, np.array(loss_G))
+np.savetxt(path_loss_D, np.array(loss_D))
+torch.save(Generator.state_dict(), path_parameter_G)
+torch.save(Discriminator.state_dict(), path_parameter_D)
