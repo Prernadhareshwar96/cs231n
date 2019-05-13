@@ -74,7 +74,7 @@ for filename in os.listdir(loc):
     f_list.append(loc + '/' + filename)
 
 lr_val = 0.00005
-num_epochs = 500
+num_epochs = 1
 optim_G = torch.optim.RMSprop(Generator.parameters(), lr = lr_val)
 optim_D = torch.optim.RMSprop(Discriminator.parameters(), lr = lr_val)
 
