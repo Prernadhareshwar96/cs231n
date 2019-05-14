@@ -148,7 +148,7 @@ path_parameter_G = "output/" + "latest_G_" +str(lr_val)+ '_'+ str(num_epochs) + 
 path_parameter_D = "output/" + "latest_D_" +str(lr_val)+ '_'+ str(num_epochs) + ".pt"
 path_loss_G = "output/" + "Loss_G_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
 path_loss_D = "output/" + "Loss_D_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
-np.savetxt(path_loss_G, np.array(loss_G))
-np.savetxt(path_loss_D, np.array(loss_D))
+np.savetxt(path_loss_G, np.array(loss_gen))
+np.savetxt(path_loss_D, np.array(loss_dis))
 torch.save(Generator.state_dict(), path_parameter_G)
 torch.save(Discriminator.state_dict(), path_parameter_D)
