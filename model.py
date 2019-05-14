@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
+import os
 
 class View_fun(nn.Module):
         def __init__(self):
@@ -78,7 +79,7 @@ for filename in os.listdir(loc):
     f_list.append(loc + '/' + filename)
 
 lr_val = 0.00005
-num_epochs = 50
+num_epochs = 500
 Generator = Generator.cuda()
 Discriminator = Discriminator.cuda()
 optim_G = torch.optim.RMSprop(Generator.parameters(), lr = lr_val)
@@ -97,7 +98,8 @@ for n in range(num_epochs):
         torch.save(Discriminator.state_dict(), path_parameter_D)
     for f in f_list:
         ctr += 1
-        print(ctr)
+        if float(ctr)%20.0 == 0:
+            print(ctr)
         X_full = np.loadtxt(f)
         X_full = torch.tensor(X_full).to(device, dtype=torch.float)
         X_full = X_full.view(X_full.shape[0], 64, 64, 3)
