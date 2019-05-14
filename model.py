@@ -92,7 +92,7 @@ ctr = 0
 t = 0
 for n in range(num_epochs):
     print("Number of Epochs =", n)
-    if float(n+1)%50 == 0:
+    if float(n+1)%25 == 0:
         path_parameter_G = "output/" + "inter_G_" +str(lr_val)+ '_'+ str(n+1) + ".pt"
         path_parameter_D = "output/" + "inter_D_" +str(lr_val)+ '_'+ str(n+1) + ".pt"
         torch.save(Generator.state_dict(), path_parameter_G)
