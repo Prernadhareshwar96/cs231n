@@ -78,7 +78,7 @@ f_list = []
 for filename in os.listdir(loc):
     f_list.append(loc + '/' + filename)
 
-lr_val = 0.00005
+lr_val = 0.0002
 num_epochs = 500
 Generator = Generator.cuda()
 Discriminator = Discriminator.cuda()
@@ -97,6 +97,10 @@ for n in range(num_epochs):
         path_parameter_D = "output/" + "inter_D_" +str(lr_val)+ '_'+ str(n+1) + ".pt"
         torch.save(Generator.state_dict(), path_parameter_G)
         torch.save(Discriminator.state_dict(), path_parameter_D)
+        path_loss_G = "output/" + "inter_G_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
+        path_loss_D = "output/" + "inter_D_" +str(lr_val)+ '_'+ str(num_epochs) + ".csv"
+        np.savetxt(path_loss_G, np.array(loss_gen))
+        np.savetxt(path_loss_D, np.array(loss_dis))
     for f in f_list:
         ctr += 1
         if float(ctr)%20.0 == 0:
