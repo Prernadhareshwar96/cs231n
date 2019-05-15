@@ -31,15 +31,7 @@ Generator = nn.Sequential(
     nn.Conv2d(128, 64, 5, stride = 1, padding = 2),
     nn.BatchNorm2d(64),
     nn.ReLU(),
-    nn.Conv2d(64, 32, 5, stride = 1, padding = 2),
-    nn.BatchNorm2d(32),
-    nn.ReLU(),
-    nn.Conv2d(32, 16, 3, stride = 1, padding = 1),
-    nn.BatchNorm2d(16),
-    nn.ReLU(),
-    nn.Conv2d(16, 8, 3, stride = 1, padding = 1),
-    nn.ReLU(),
-    nn.Conv2d(8, 3, 3, stride = 1, padding = 1),
+    nn.Conv2d(64, 3, 5, stride = 1, padding = 2),
 )
 
 Discriminator = nn.Sequential(
@@ -59,13 +51,9 @@ Discriminator = nn.Sequential(
     nn.MaxPool3d(2),
     nn.BatchNorm3d(64),
     nn.LeakyReLU(0.2, True),
-    nn.Conv3d(64, 128, 3, stride = 1, padding = 1),
-    nn.MaxPool3d(2),
-    nn.BatchNorm3d(128),
-    nn.LeakyReLU(0.2, True),
     nn.MaxPool3d(2),
     View_fun(),
-    nn.Linear(128, 1),
+    nn.Linear(256, 1),
     nn.Sigmoid(),
 )
 cuda = torch.cuda.is_available()
