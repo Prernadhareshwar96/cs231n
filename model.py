@@ -38,7 +38,6 @@ Generator = nn.Sequential(
     nn.BatchNorm2d(16),
     nn.ReLU(),
     nn.Conv2d(16, 8, 3, stride = 1, padding = 1),
-    nn.BatchNorm2d(8),
     nn.ReLU(),
     nn.Conv2d(8, 3, 3, stride = 1, padding = 1),
 )
