@@ -11,6 +11,48 @@ class View_fun(nn.Module):
         def forward(self, x):
             return x.view(-1) 
             
+Generator = nn.Sequential(
+    nn.Conv2d(3, 1024, 3, stride = 1, padding = 1),
+    nn.BatchNorm2d(1024),
+    nn.ReLU(),
+    nn.Conv2d(1024, 512, 5, stride = 1, padding = 2),
+    nn.BatchNorm2d(512),
+    nn.ReLU(),
+    nn.Conv2d(512, 256, 5, stride = 1, padding = 2),
+    nn.BatchNorm2d(256),
+    nn.ReLU(),
+    nn.Conv2d(256, 128, 5, stride = 1, padding = 2),
+    nn.BatchNorm2d(128),
+    nn.ReLU(),
+    nn.Conv2d(128, 64, 5, stride = 1, padding = 2),
+    nn.BatchNorm2d(64),
+    nn.ReLU(),
+    nn.Conv2d(64, 3, 5, stride = 1, padding = 2),
+)
+
+Discriminator = nn.Sequential(
+    nn.Conv3d(3, 8, 3, stride = 1, padding = 1),
+    nn.MaxPool3d(2),
+    nn.BatchNorm3d(8),
+    nn.LeakyReLU(0.2, True),
+    nn.Conv3d(8, 16, 3, stride = 1, padding = 1),
+    nn.MaxPool3d(2),
+    nn.BatchNorm3d(16),
+    nn.LeakyReLU(0.2, True),
+    nn.Conv3d(16, 32, 3, stride = 1, padding = 1),
+    nn.MaxPool3d(2),
+    nn.BatchNorm3d(32),
+    nn.LeakyReLU(0.2, True),
+    nn.Conv3d(32, 64, 3, stride = 1, padding = 1),
+    nn.MaxPool3d(2),
+    nn.BatchNorm3d(64),
+    nn.LeakyReLU(0.2, True),
+    nn.MaxPool3d(2),
+    View_fun(),
+    nn.Linear(256, 1),
+    nn.Sigmoid(),
+)
+
 cuda = torch.cuda.is_available()
 device = torch.device('cuda:0' if cuda else 'cpu')
 
