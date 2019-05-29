@@ -32,14 +32,11 @@ Generator = nn.Sequential(
     nn.BatchNorm2d(64),
     nn.ReLU(),
     nn.Conv2d(64, 3, 5, stride = 1, padding = 2),
+    nn.Sigmoid(),
 )
 
 Discriminator = nn.Sequential(
-    nn.Conv3d(3, 8, 3, stride = 1, padding = 1),
-    nn.MaxPool3d(2),
-    nn.BatchNorm3d(8),
-    nn.LeakyReLU(0.2, True),
-    nn.Conv3d(8, 16, 3, stride = 1, padding = 1),
+    nn.Conv3d(3, 16, 3, stride = 1, padding = 1),
     nn.MaxPool3d(2),
     nn.BatchNorm3d(16),
     nn.LeakyReLU(0.2, True),
@@ -51,7 +48,7 @@ Discriminator = nn.Sequential(
     nn.MaxPool3d(2),
     nn.BatchNorm3d(64),
     nn.LeakyReLU(0.2, True),
-    nn.MaxPool3d(2),
+    nn.MaxPool3d(3),
     View_fun(),
     nn.Linear(256, 1),
     nn.Sigmoid(),
@@ -104,7 +101,7 @@ for n in range(num_epochs):
             X = X_full[idx*32:(idx+1)*32]
             X_real = X.view(1, X.shape[0], X.shape[1], X.shape[2], X.shape[3])
             X_real = X_real.permute(0, 2, 3, 4, 1)
-            Y_gen = Generator(X)
+            Y_gen = Generator(X)*255
             Y_gen = Y_gen.view(1, Y_gen.shape[0], Y_gen.shape[1], Y_gen.shape[2], Y_gen.shape[3])
             Y_gen = Y_gen.permute(0, 2, 3, 4, 1)
             Y_dis = Discriminator(Y_gen)
