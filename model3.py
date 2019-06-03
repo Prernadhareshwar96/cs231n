@@ -57,84 +57,87 @@ for b in tqdm(batches):
     X_traind = torch.cat((X_traind, X_dis[1:X_dis.shape[0],:,:,:,:].unsqueeze(0)), dim = 0)
 X_traing = X_traing[1:X_traing.shape[0],:,:,:,:]/255.
 X_traind = X_traind[1:X_traind.shape[0],:,:,:,:,:].permute(0,1,2,5,3,4)/255. 
-
+        
 class Gen(nn.Module):
     def __init__(self):
         super(Gen, self).__init__()
         self.relu = nn.LeakyReLU(0.2, False)
         self.sigmoid = nn.Sigmoid()
         self.tanh = nn.Tanh()
-        self.conv1 = nn.Conv3d(3, 16, 7, stride = 1, padding = 3)
-        self.bn1 = nn.BatchNorm3d(16)
-        self.conv2 = nn.Conv3d(16, 128, 7, stride = 2, padding = 3)
-        self.bn2 = nn.BatchNorm3d(128)
-        self.conv3 = nn.Conv3d(128, 128, 7, stride = 1, padding = 3)
-        self.bn3 = nn.BatchNorm3d(128)
-        self.conv4 = nn.Conv3d(128, 128, 7, stride = 2, padding = 3)
-        self.bn4 = nn.BatchNorm3d(128)
-        self.conv5 = nn.Conv3d(128, 256, 7, stride = 1, padding = 3)
-        self.bn5 = nn.BatchNorm3d(256)
-        self.conv6 = nn.Conv3d(256, 512, 5, stride = 2, padding = 2)
-        self.bn6 = nn.BatchNorm3d(512)
-        self.conv7 = nn.Conv3d(512, 512, 5, stride = 1, padding = 2)
-        self.bn7 = nn.BatchNorm3d(512)
-        self.conv8 = nn.Conv3d(512, 1024, 4, stride = 4)#1, 2,2
-        self.bn8 = nn.BatchNorm3d(1024)
-        self.conv10 = nn.ConvTranspose3d(1024, 512, 5, stride = 1)#5, 6, 6
-        self.bn10 = nn.BatchNorm3d(512)
-        self.conv11 = nn.ConvTranspose3d(512, 512, 5, stride = 2, padding = (3, 0, 0))#7, 15, 15
-        self.bn11 = nn.BatchNorm3d(512)
-        self.conv12 = nn.ConvTranspose3d(512, 256, 5, stride = 1)#11, 19, 19
-        self.bn12 = nn.BatchNorm3d(256)
-        self.conv13 = nn.ConvTranspose3d(256, 128, 5, stride = 1)#15, 23, 23
-        self.bn13 = nn.BatchNorm3d(128)
-        self.conv14 = nn.ConvTranspose3d(128, 32, 5, stride = 1)#19, 27, 27
-        self.bn14 = nn.BatchNorm3d(32)
-        self.conv15 = nn.ConvTranspose3d(32, 16, 5, stride = 1)#23, 31, 31
-        self.bn15 = nn.BatchNorm3d(16)
-        self.conv16 = nn.ConvTranspose3d(16, 8, 3, stride = 1, padding = (4,0,0))#17, 33, 33
-        self.bn16 = nn.BatchNorm3d(8)
-        self.conv17 = nn.ConvTranspose3d(8, 3, 3, stride = 2, padding = 2, output_padding = 1)#32, 64, 64
-        self.bn17 = nn.BatchNorm3d(3)
-        self.conv18 = nn.ConvTranspose3d(3, 3, 3, stride = 1, padding = 1)#32, 64, 64
+        self.conv1 = nn.Conv2d(3, 16, 7, stride = 1, padding = 3)
+        self.bn1 = nn.BatchNorm2d(16)
+        self.conv2 = nn.Conv2d(16, 128, 7, stride = 2, padding = 3)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.conv3 = nn.Conv2d(128, 128, 7, stride = 1, padding = 3)
+        self.bn3 = nn.BatchNorm2d(128)
+        self.conv4 = nn.Conv2d(128, 128, 7, stride = 2, padding = 3)
+        self.bn4 = nn.BatchNorm2d(128)
+        self.conv5 = nn.Conv2d(128, 256, 7, stride = 1, padding = 3)
+        self.bn5 = nn.BatchNorm2d(256)
+        self.conv6 = nn.Conv2d(256, 512, 5, stride = 2, padding = 2)
+        self.bn6 = nn.BatchNorm2d(512)
+        self.conv7 = nn.Conv2d(512, 512, 5, stride = 1, padding = 2)
+        self.bn7 = nn.BatchNorm2d(512)
+        self.conv8 = nn.Conv2d(512, 1024, 4, stride = 4)#2,2
+        self.bn8 = nn.BatchNorm2d(1024)
+        self.conv10 = nn.ConvTranspose2d(1024, 512, 5, stride = 1)#6, 6
+        self.bn10 = nn.BatchNorm2d(512)
+        self.conv11 = nn.ConvTranspose2d(512, 512, 5, stride = 2,)#15, 15
+        self.bn11 = nn.BatchNorm2d(512)
+        self.conv12 = nn.ConvTranspose2d(512, 256, 5, stride = 1)#19, 19
+        self.bn12 = nn.BatchNorm2d(256)
+        self.conv13 = nn.ConvTranspose2d(256, 128, 5, stride = 1)#23, 23
+        self.bn13 = nn.BatchNorm2d(128)
+        self.conv14 = nn.ConvTranspose2d(128, 32, 5, stride = 1)#27, 27
+        self.bn14 = nn.BatchNorm2d(32)
+        self.conv15 = nn.ConvTranspose2d(32, 16, 5, stride = 1)#31, 31
+        self.bn15 = nn.BatchNorm2d(16)
+        self.conv16 = nn.ConvTranspose2d(16, 8, 3, stride = 1)#33, 33
+        self.bn16 = nn.BatchNorm2d(8)
+        self.conv17 = nn.ConvTranspose2d(8, 3, 3, stride = 2, padding = 2, output_padding = 1)#64, 64
+        self.bn17 = nn.BatchNorm2d(3)
+        self.conv18 = nn.ConvTranspose2d(3, 3, 3, stride = 1, padding = 1)#64, 64
        
     def forward(self, x):
-        original = x[:,:,:,:,:1]
-#         print(x.shape)
-        out = self.relu(self.bn1(self.conv1(x)))
-#         print(out.shape)
-        out = self.relu(self.bn2(self.conv2(out)))
-#         print(out.shape)
-        out = self.relu(self.bn3(self.conv3(out)))
-#         print(out.shape)
-        out = self.relu(self.bn4(self.conv4(out)))
-#         print(out.shape)
-        out = self.relu(self.bn5(self.conv5(out)))
-#         print(out.shape)
-        out = self.relu(self.bn6(self.conv6(out)))
-#         print(out.shape)
-        out = self.relu(self.bn7(self.conv7(out)))
-#         print(out.shape)
-        out = self.relu(self.bn8(self.conv8(out)))
-#         print(out.shape)
-        out = self.relu(self.bn10(self.conv10(out)))
-#         print(out.shape)
-        out = self.relu(self.bn11(self.conv11(out)))
-#         print(out.shape)
-        out = self.relu(self.bn12(self.conv12(out)))
-#         print(out.shape)
-        out = self.relu(self.bn13(self.conv13(out)))
-#         print(out.shape)
-        out = self.relu(self.bn14(self.conv14(out)))
-#         print(out.shape)
-        out = self.relu(self.bn15(self.conv15(out)))
-#         print(out.shape)
-        out = self.relu(self.bn16(self.conv16(out)))
-#         print(out.shape)
-        out = self.relu(self.bn17(self.conv17(out)))
-#         print(out.shape)
-        out = self.sigmoid(out)    
-        return out
+        Output = torch.zeros((x.shape[0],3,32,64,64))
+        for i in range(32):
+    #         print(x.shape)
+            out = self.relu(self.bn1(self.conv1(x)))
+    #         print(out.shape)
+            out = self.relu(self.bn2(self.conv2(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn3(self.conv3(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn4(self.conv4(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn5(self.conv5(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn6(self.conv6(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn7(self.conv7(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn8(self.conv8(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn10(self.conv10(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn11(self.conv11(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn12(self.conv12(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn13(self.conv13(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn14(self.conv14(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn15(self.conv15(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn16(self.conv16(out)))
+    #         print(out.shape)
+            out = self.relu(self.bn17(self.conv17(out)))
+    #         print(out.shape)
+            out = self.sigmoid(out)   
+            Output[:,:,i,:,:] = out
+            x = out
+        return Output
 
 Discriminator = nn.Sequential(
     nn.Conv3d(3,16, 3, stride = 1, padding = 1),
@@ -143,18 +146,18 @@ Discriminator = nn.Sequential(
     nn.AvgPool3d(2),
     nn.Conv3d(16, 32, 5, stride = 1, padding = 1),
     nn.BatchNorm3d(32),
-#     nn.LeakyReLU(0.2, False),
+    nn.LeakyReLU(0.2, False),
     nn.AvgPool3d(2),
     nn.Conv3d(32, 128, 3, stride = 1, padding = 1),
     nn.BatchNorm3d(128),
-#     nn.LeakyReLU(0.2, False),
+    nn.LeakyReLU(0.2, False),
     nn.AvgPool3d(2),
     nn.Conv3d(128, 128, 3, stride = 1, padding = 1),
     nn.BatchNorm3d(128),
-#     nn.LeakyReLU(0.2, False),
+    nn.LeakyReLU(0.2, False),
     nn.Conv3d(128, 256, 3, stride = 1, padding = 1),
     nn.BatchNorm3d(256),
-#     nn.LeakyReLU(0.2, False),
+    nn.LeakyReLU(0.2, False),
     nn.AvgPool3d(3),
     nn.Conv3d(256, 512, 3, stride = 1, padding = 1),
     nn.BatchNorm3d(512),

@@ -57,7 +57,7 @@ cuda = torch.cuda.is_available()
 device = torch.device('cuda:0' if cuda else 'cpu')
 
 X = {}
-loc = "/home/prerna/data"
+loc = "~/prerna/data"
 f_list = []
 for filename in os.listdir(loc):
     f_list.append(loc + '/' + filename)
